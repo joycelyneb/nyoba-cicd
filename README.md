@@ -132,14 +132,3 @@ Menggunakan multi-stage build dengan Nginx:
 2. **Test API**: Gunakan tools seperti Postman atau curl untuk test API
 3. **Monitor Performance**: Gunakan `docker stats` untuk melihat resource usage
 4. **Explore Network**: Services berkomunikasi melalui service names (`backend:5000`)
-
-##  Next Steps
-
-Untuk advanced CI/CD learning:
-- Tambahkan GitHub Actions untuk automated testing
-- Implementasikan image registry (Docker Hub, GitHub Container Registry)
-- Tambahkan database layer (MongoDB, PostgreSQL)
-- Implement logging dan monitoring (ELK Stack, Prometheus)
-- Setup Kubernetes untuk orchestration
-
-Selamat belajar! 🎓

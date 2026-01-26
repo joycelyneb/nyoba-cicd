@@ -1,0 +1,23 @@
+name: Microservices Docker CI
+
+# Trigger: Menjalankan robot setiap ada push ke branch main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Backend Image
+        run: docker build -t my-backend ./backend
+
+      - name: Build Frontend Image
+        run: docker build -t my-frontend ./frontend
+
+      - name: Run Docker Compose Test
+        run: docker-compose up -d

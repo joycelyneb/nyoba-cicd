@@ -1,8 +1,10 @@
 name: Microservices Docker CI
 
-# Trigger: Menjalankan robot setiap ada push ke branch main
+# Trigger: Menjalankan robot setiap ada push ke branch
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
 
 jobs:

@@ -1,8 +1,8 @@
-# 📦 Microservices Learning Project - CI/CD
+#  Microservices Learning Project - CI/CD
 
-Proyek sederhana untuk belajar CI/CD dengan Node.js (Express) dan React menggunakan Docker & Docker Compose.
+Proyek belajar CI/CD dengan Node.js (Express) dan React menggunakan Docker & Docker Compose.
 
-## 📋 Struktur Folder
+##  Struktur Folder
 
 ```
 c:\IBM\nyoba
@@ -25,7 +25,7 @@ c:\IBM\nyoba
 └── docker-compose.yml         # Konfigurasi untuk menjalankan kedua service
 ```
 
-## 🚀 Cara Menjalankan Menggunakan Docker Compose
+## Cara Menjalankan Menggunakan Docker Compose
 
 ### Prasyarat
 - **Docker Desktop** terinstall (https://www.docker.com/products/docker-desktop)
@@ -83,7 +83,7 @@ Untuk menghapus semua containers dan volumes:
 docker-compose down -v
 ```
 
-## 📝 Penjelasan Komponen
+##  Penjelasan Komponen
 
 ### Backend (Express)
 - **Port**: 5000
@@ -114,7 +114,7 @@ Menggunakan multi-stage build dengan Nginx:
 - Set health check untuk backend
 - Automatic restart jika ada error
 
-## 🔧 Command Penting
+##  Command Penting
 
 | Command | Fungsi |
 |---------|--------|
@@ -126,14 +126,14 @@ Menggunakan multi-stage build dengan Nginx:
 | `docker-compose exec backend npm start` | Akses container backend |
 | `docker-compose exec frontend npm start` | Akses container frontend |
 
-## 📌 Tips untuk Belajar CI/CD
+##  Tips untuk Belajar CI/CD
 
 1. **Modifikasi kode**: Edit `backend/server.js` atau `frontend/App.js` dan jalankan `docker-compose up --build` untuk rebuild
 2. **Test API**: Gunakan tools seperti Postman atau curl untuk test API
 3. **Monitor Performance**: Gunakan `docker stats` untuk melihat resource usage
 4. **Explore Network**: Services berkomunikasi melalui service names (`backend:5000`)
 
-## 🎯 Next Steps
+##  Next Steps
 
 Untuk advanced CI/CD learning:
 - Tambahkan GitHub Actions untuk automated testing

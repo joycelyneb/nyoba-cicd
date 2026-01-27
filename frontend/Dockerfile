@@ -1,4 +1,4 @@
-# Stage 1: Build React app
+# Stage 1: Build React app - test build deploy test
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./

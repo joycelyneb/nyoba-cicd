@@ -1,6 +1,6 @@
 name: Microservices Docker CI
 
-# Trigger: Menjalankan robot setiap ada push ke branch
+# Trigger
 on:
   push:
     branches: [ "main" ]
@@ -22,4 +22,4 @@ jobs:
         run: docker build -t my-frontend ./frontend
 
       - name: Run Docker Compose Test
-        run: docker-compose up -d
+        run: docker compose up -d

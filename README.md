@@ -1,6 +1,6 @@
 #  Microservices Learning Project - CI/CD
 
-Proyek belajar CI/CD dengan Node.js (Express) dan React menggunakan Docker & Docker Compose.
+Proyek CI/CD dengan Node.js (Express) dan React menggunakan Docker & Docker Compose.
 
 ##  Struktur Folder
 
@@ -27,10 +27,6 @@ c:\IBM\nyoba
 
 ## Cara Menjalankan Menggunakan Docker Compose
 
-### Prasyarat
-- **Docker Desktop** terinstall (https://www.docker.com/products/docker-desktop)
-- **Terminal/PowerShell** 
-
 ### Langkah-Langkah:
 
 #### 1. **Buka Terminal/PowerShell dan navigasi ke folder project**
@@ -41,14 +37,6 @@ cd c:\IBM\nyoba
 #### 2. **Build images dan jalankan containers**
 ```bash
 docker-compose up --build
-```
-
-Output yang akan muncul:
-```
-[+] Building 2.3s (20/20) FINISHED
-[+] Running 2/2
-  ✓ Container microservices-backend running
-  ✓ Container microservices-frontend running
 ```
 
 #### 3. **Akses aplikasi di browser**
@@ -93,20 +81,16 @@ docker-compose down -v
 
 ### Frontend (React)
 - **Port**: 3000
-- **Fitur**:
-  - Menampilkan data dari backend
-  - Tombol Refresh untuk memanggil ulang data
-  - UI yang responsive dan menarik
 
 ### Dockerfile Backend
 Menggunakan multi-stage build untuk mengecilkan ukuran image:
 - Stage 1: Build dengan Node.js
-- Stage 2: Runtime dengan Node.js Alpine (lebih kecil)
+- Stage 2: Runtime dengan Node.js Alpine
 
 ### Dockerfile Frontend
 Menggunakan multi-stage build dengan Nginx:
 - Stage 1: Build React app
-- Stage 2: Serve dengan Nginx (lebih efisien)
+- Stage 2: Serve dengan Nginx
 
 ### Docker Compose
 - Mengelola kedua service (backend & frontend)
@@ -125,10 +109,3 @@ Menggunakan multi-stage build dengan Nginx:
 | `docker-compose ps` | Lihat status containers |
 | `docker-compose exec backend npm start` | Akses container backend |
 | `docker-compose exec frontend npm start` | Akses container frontend |
-
-##  Tips untuk Belajar CI/CD
-
-1. **Modifikasi kode**: Edit `backend/server.js` atau `frontend/App.js` dan jalankan `docker-compose up --build` untuk rebuild
-2. **Test API**: Gunakan tools seperti Postman atau curl untuk test API
-3. **Monitor Performance**: Gunakan `docker stats` untuk melihat resource usage
-4. **Explore Network**: Services berkomunikasi melalui service names (`backend:5000`)

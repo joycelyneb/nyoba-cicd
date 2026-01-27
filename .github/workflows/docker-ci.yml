@@ -1,6 +1,5 @@
-name: Microservices Docker CI
+name: Microservices Docker CI/CD
 
-# Trigger
 on:
   push:
     branches: [ "main" ]
@@ -8,18 +7,33 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # Ambil kode dari repo
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build Backend Image
-        run: docker build -t my-backend ./backend
+      # Login dulu ke Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Frontend Image
-        run: docker build -t my-frontend ./frontend
+      # Build & Push Backend
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:latest
 
-      - name: Run Docker Compose Test
-        run: docker compose up -d
+      # Build & Push Frontend
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:latest

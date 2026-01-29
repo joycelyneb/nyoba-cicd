@@ -1,6 +1,6 @@
 variable "ibmcloud_api_key" {
   type        = string
-  description = "IBM Cloud API Key (dari GitHub Secret: IBMCLOUD_API_KEY)"
+  description = "IBM Cloud API Key"
   sensitive   = true
 }
 

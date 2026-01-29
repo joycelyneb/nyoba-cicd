@@ -1,0 +1,14 @@
+# Folder sistem Terraform
+.terraform/
+.terraform.lock.hcl
+
+# File state (ini rahasia, jangan di-push)
+*.tfstate
+*.tfstate.backup
+
+# File variabel (kalau kamu punya .tfvars)
+*.tfvars
+terraform.tfvars
+
+# Log
+*.log

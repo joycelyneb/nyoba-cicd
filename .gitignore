@@ -2,11 +2,11 @@
 .terraform/
 .terraform.lock.hcl
 
-# File state (ini rahasia, jangan di-push)
+# File state
 *.tfstate
 *.tfstate.backup
 
-# File variabel (kalau kamu punya .tfvars)
+# File variabel
 *.tfvars
 terraform.tfvars
 

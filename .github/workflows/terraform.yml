@@ -13,13 +13,12 @@ on:
       - main
 
 env:
-  # Menghubungkan variabel Terraform dengan Secrets & nilai konstan
   TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
   TF_VAR_resource_group: "itz-wxo-697c4652010cfefe9db664"
-  TF_VAR_project_name: "nyoba-cicd-joy" # Tambahkan ini agar tidak ditanya manual
+  TF_VAR_project_name: "nyoba-cicd-joy"
   TF_VAR_backend_image: "icr.io/nyoba-cicd/backend-app:latest"  
   TF_VAR_frontend_image: "icr.io/nyoba-cicd/frontend-app:latest"
-  TF_VAR_region: "us-south" # Tambahkan default region jika belum ada di variables.tf
+  TF_VAR_region: "us-south"
 
 jobs:
   terraform:

@@ -48,7 +48,7 @@ resource "ibm_code_engine_app" "frontend" {
 
   run_env_variables {
     type  = "literal"
-    name  = "BACKEND_URL"
+    name  = "REACT_APP_BACKEND_URL"
     value = ibm_code_engine_app.backend.endpoint 
   }
 }

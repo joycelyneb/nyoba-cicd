@@ -8,6 +8,12 @@ variable "region" {
   default = "us-south"
 }
 
+variable "resource_group" {
+  type        = string
+  description = "Nama Resource Group dari TechZone"
+  default     = "itz-wxo-697c4652010cfefe9db664" 
+}
+
 variable "project_name" {
   type    = string
 }

@@ -16,12 +16,15 @@ variable "resource_group" {
 
 variable "project_name" {
   type    = string
+  default = "nyoba-cicd-joy"
 }
 
 variable "backend_image" {
-  type = string
+  type    = string
+  default = "icr.io/nyoba-cicd/backend-app:latest"
 }
 
 variable "frontend_image" {
-  type = string
+  type    = string
+  default = "icr.io/nyoba-cicd/frontend-app:latest"
 }

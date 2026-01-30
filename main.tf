@@ -26,17 +26,10 @@ resource "ibm_code_engine_app" "backend" {
   project_id      = ibm_code_engine_project.ce_project.project_id
   name            = "${var.project_name}-backend"
   image_reference = var.backend_image
+  
+  run_cpu_speed   = "0.25"
+  run_memory_size = "512M" 
   image_port      = 5000
-
-  # PERBAIKAN: Gunakan prefix 'run_' untuk spek resource
-  run_cpu    = "0.25"
-  run_memory = "512Mi"
-
-  run_env_variables {
-    type  = "literal"
-    name  = "NODE_ENV"
-    value = "production"
-  }
 
   run_env_variables {
     type  = "literal"
@@ -47,14 +40,14 @@ resource "ibm_code_engine_app" "backend" {
 
 # --- FRONTEND ---
 resource "ibm_code_engine_app" "frontend" {
+  depends_on      = [ibm_code_engine_app.backend] # Memastikan backend jadi duluan
   project_id      = ibm_code_engine_project.ce_project.project_id
   name            = "${var.project_name}-frontend"
   image_reference = var.frontend_image
+  
+  run_cpu_speed   = "0.25"
+  run_memory_size = "512M"
   image_port      = 3000
-
-  # PERBAIKAN: Gunakan prefix 'run_' untuk spek resource
-  run_cpu    = "0.25"
-  run_memory = "512Mi"
 
   run_env_variables {
     type  = "literal"

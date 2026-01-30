@@ -1,7 +1,6 @@
 variable "ibmcloud_api_key" {
-  type        = string
-  description = "IBM Cloud API Key"
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "region" {
@@ -10,7 +9,7 @@ variable "region" {
 }
 
 variable "project_name" {
-  type = string
+  type    = string
 }
 
 variable "backend_image" {

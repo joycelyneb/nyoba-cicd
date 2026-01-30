@@ -8,10 +8,14 @@ on:
       - 'main.tf'
       - 'variables.tf'
       - 'outputs.tf'
-      - 'terraform.tfvars'
   pull_request:
     branches:
       - main
+
+env:
+  TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+  TF_VAR_backend_image: ${{ secrets.BACKEND_IMAGE }}
+  TF_VAR_frontend_image: ${{ secrets.FRONTEND_IMAGE }}
 
 jobs:
   terraform:
@@ -28,8 +32,6 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        env:
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
 
       - name: Terraform Format Check
         run: terraform fmt -check
@@ -37,16 +39,10 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
-        env:
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        env:
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
-        env:
-          TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}

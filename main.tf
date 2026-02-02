@@ -12,18 +12,12 @@ provider "ibm" {
   region           = var.region
 }
 
-# 1. Ambil data Resource Group
+# Resource Group
 data "ibm_resource_group" "default" {
   name = var.resource_group
 }
 
-# 2. BUAT NAMESPACE
-resource "ibm_cr_namespace" "registry_namespace" {
-  name              = "nyoba-cicd"
-  resource_group_id = data.ibm_resource_group.default.id
-}
-
-# 3. Buat Project Code Engine
+# Buat Project
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name
   resource_group_id = data.ibm_resource_group.default.id
@@ -31,8 +25,7 @@ resource "ibm_code_engine_project" "ce_project" {
 
 # --- BACKEND ---
 resource "ibm_code_engine_app" "backend" {
-  # Backend harus nunggu Project DAN Namespace jadi dulu
-  depends_on      = [ibm_code_engine_project.ce_project, ibm_cr_namespace.registry_namespace]
+  depends_on      = [ibm_code_engine_project.ce_project]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
   name            = "${var.project_name}-backend"
@@ -48,7 +41,6 @@ resource "ibm_code_engine_app" "backend" {
 
 # --- FRONTEND ---
 resource "ibm_code_engine_app" "frontend" {
-  # Frontend nunggu Backend jadi dulu (untuk dapet URL endpoint)
   depends_on      = [ibm_code_engine_app.backend]
   
   project_id      = ibm_code_engine_project.ce_project.project_id

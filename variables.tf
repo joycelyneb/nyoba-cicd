@@ -21,10 +21,10 @@ variable "project_name" {
 
 variable "backend_image" {
   type    = string
-  default = "icr.io/nyoba-cicd/backend-app:latest"
+  default = "icr.io/cr-itz-z3r4x650/backend-app:latest"
 }
 
 variable "frontend_image" {
   type    = string
-  default = "icr.io/nyoba-cicd/frontend-app:latest"
+  default = "icr.io/cr-itz-z3r4x650/frontend-app:latest"
 }

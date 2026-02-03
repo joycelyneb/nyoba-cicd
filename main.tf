@@ -17,13 +17,6 @@ data "ibm_resource_group" "default" {
   name = var.resource_group
 }
 
-# Buat Namespace
-resource "ibm_cr_namespace" "registry_namespace" {
-  # Nama namespace harus unik di satu region
-  name              = "joy-namespace-${var.project_name}" 
-  resource_group_id = data.ibm_resource_group.default.id
-}
-
 # Buat Project
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name

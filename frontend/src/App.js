@@ -13,8 +13,9 @@ function App() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Memanggil backend API
-      const response = await fetch('http://localhost:5000/api/data');
+      // Memanggil backend API menggunakan env var
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${backendUrl}/api/data`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

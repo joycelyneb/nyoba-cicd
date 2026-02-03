@@ -20,11 +20,11 @@ env:
   TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
   TF_VAR_resource_group: "itz-wxo-697c4652010cfefe9db664"
   TF_VAR_project_name: "nyoba-cicd-joy"
-  TF_VAR_backend_image: "icr.io/cr-itz-z3r4x650/backend-app:latest"  
-  TF_VAR_frontend_image: "icr.io/cr-itz-z3r4x650/frontend-app:latest"
+  TF_VAR_backend_image: "icr.io/joy-namespace-nyoba-cicd-joy/backend-app:latest"  
+  TF_VAR_frontend_image: "icr.io/joy-namespace-nyoba-cicd-joy/frontend-app:latest"
   TF_VAR_region: "us-south"
   IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
-  NAMESPACE: "cr-itz-z3r4x650"
+  NAMESPACE: "joy-namespace-nyoba-cicd-joy"
 
 jobs:
   build-and-deploy:
@@ -46,6 +46,9 @@ jobs:
 
       - name: Install Container Registry plugin
         run: ibmcloud plugin install container-registry
+
+      - name: Create Container Registry Namespace
+        run: ibmcloud cr namespace-add ${{ env.NAMESPACE }} || echo "Namespace already exists"
 
       - name: Login to IBM Container Registry
         run: ibmcloud cr login

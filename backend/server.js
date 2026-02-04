@@ -2,14 +2,32 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+// Di Cloud, port akan diberikan secara otomatis melalui environment variable
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// --- 1. Middleware CORS yang Diperkuat ---
+// Kita buat lebih eksplisit agar browser di laptop manapun tidak memblokir
+app.use(cors({
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
+// --- 2. Endpoint Tambahan untuk "/" ---
+// Supaya tidak muncul "Cannot GET /" saat URL utama dibuka
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'IBM Code Engine Backend is Live!',
+    health_check: '/health',
+    api_endpoint: '/api/data'
+  });
+});
 
 // Simple GET endpoint
 app.get('/api/data', (req, res) => {
+  console.log('API /api/data called');
   res.json({
     message: 'Hello from Backend!',
     timestamp: new Date().toISOString(),
@@ -26,8 +44,9 @@ app.get('/health', (req, res) => {
   res.json({ status: 'Backend is running!' });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-  console.log(`API endpoint: http://localhost:${PORT}/api/data`);
+// --- 3. Start Server dengan Binding 0.0.0.0 ---
+// PENTING: Di Cloud/Docker, server harus mendengarkan di 0.0.0.0 bukan localhost
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend server running on port ${PORT}`);
+  console.log(`PORT env: ${process.env.PORT}`);
 });

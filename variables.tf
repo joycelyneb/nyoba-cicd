@@ -28,3 +28,14 @@ variable "frontend_image" {
   type    = string
   default = "icr.io/cr-itz-z3r4x650/frontend-app:latest"
 }
+
+variable "dockerhub_username" {
+  type        = string
+  description = "Docker Hub username"
+}
+
+variable "dockerhub_password" {
+  type        = string
+  sensitive   = true
+  description = "Docker Hub password or token"
+}

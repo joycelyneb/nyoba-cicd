@@ -69,4 +69,4 @@ jobs:
       - name: Terraform Apply
         # Hanya jalan kalau push ke main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve

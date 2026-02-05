@@ -1,38 +1,42 @@
 version: '3.8'
 
 services:
+  # --- BACKEND SERVICE ---
   backend:
+    container_name: joy-backend-prod
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: microservices-backend
     ports:
       - "5000:5000"
     environment:
       - NODE_ENV=production
       - PORT=5000
     networks:
-      - microservices-network
-    restart: unless-stopped
+      - joy-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/health"]
       interval: 10s
       timeout: 5s
       retries: 3
 
+  # --- FRONTEND SERVICE ---
   frontend:
+    container_name: joy-frontend-prod
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: microservices-frontend
+      # Catatan: Karena URL sudah di-hardcode di App.js, 
+      # args di sini opsional, tapi bagus untuk struktur.
+      args:
+        - REACT_APP_BACKEND_URL=https://nyoba-cicd-joy-backend.25vc8mhbgyki.us-south.codeengine.appdomain.cloud
     ports:
       - "3000:3000"
-    depends_on:
-      - backend
     networks:
-      - microservices-network
-    restart: unless-stopped
+      - joy-network
+    # Frontend tidak perlu depends_on backend secara ketat 
+    # karena dia nembak ke URL Cloud, bukan ke container backend lokal.
 
 networks:
-  microservices-network:
+  joy-network:
     driver: bridge

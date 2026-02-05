@@ -10,7 +10,7 @@ env:
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
   IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
   
-  # Variabel Terraform (Otomatis dibaca dari env ini)
+  # Variabel Terraform (Otomatis dibaca dari env ini
   TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
   TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
   TF_VAR_dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}

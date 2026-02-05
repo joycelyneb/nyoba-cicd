@@ -43,8 +43,6 @@ jobs:
         with:
           context: ./frontend
           push: true
-          # Note: Kita tidak bisa inject URL Backend di sini secara dinamis karena Backend belum ada URL-nya saat pertama kali deploy.
-          # Pastikan URL backend sudah di-hardcode di App.js seperti solusi kita sebelumnya.
           tags: ${{ env.DOCKERHUB_USERNAME }}/frontend-app:latest
 
       # --- STEP 2: TERRAFORM DEPLOY ---

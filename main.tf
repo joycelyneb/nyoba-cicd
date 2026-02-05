@@ -101,7 +101,7 @@ resource "ibm_code_engine_app" "backend" {
     value = "5000"
   }
   
-  # Tambahkan environment dari secret
+  # Tambahkan environment dari secre
   run_env_variables {
     type       = "secret_full_reference"
     reference  = ibm_code_engine_secret.app_env_secret.name

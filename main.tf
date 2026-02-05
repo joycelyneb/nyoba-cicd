@@ -58,12 +58,13 @@ resource "ibm_code_engine_app" "backend" {
   image_port      = 5000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # Spek Tinggi (Sesuai request)
-  scale_cpu_limit                = "2"
-  scale_memory_limit             = "4G"
-  scale_ephemeral_storage_limit  = "2457M"
+  scale_cpu_limit                = "0.25"
+  scale_memory_limit             = "0.5G"
+  scale_ephemeral_storage_limit  = "400M" # Perkecil juga storage-nya
   scale_min_instances            = 1
-  scale_max_instances            = 10
+  scale_max_instances            = 2      # Jangan banyak-banyak dulu
+  scale_concurrency              = 10
+  scale_concurrency_target       = 10
   
   run_env_variables {
     type  = "literal"
@@ -83,11 +84,11 @@ resource "ibm_code_engine_app" "frontend" {
   image_port      = 3000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  scale_cpu_limit                = "2"
-  scale_memory_limit             = "4G"
-  scale_ephemeral_storage_limit  = "2457M"
+  scale_cpu_limit                = "0.25"
+  scale_memory_limit             = "0.5G"
+  scale_ephemeral_storage_limit  = "400M"
   scale_min_instances            = 1
-  scale_max_instances            = 10
+  scale_max_instances            = 2
 
   # Menyambungkan URL Backend ke Frontend
   run_env_variables {

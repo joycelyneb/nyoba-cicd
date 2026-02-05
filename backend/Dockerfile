@@ -1,10 +1,10 @@
-# Stage 1: Build
+# Build
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Stage 2: Runtime
+# Runtime
 FROM node:18-alpine
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules

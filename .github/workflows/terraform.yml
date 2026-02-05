@@ -1,69 +1,53 @@
-name: Terraform Deploy to IBM Cloud Code Engine
+name: Fullstack CI/CD to IBM Cloud
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'main.tf'
-      - 'variables.tf'
-      - 'outputs.tf'
-      - 'backend/Dockerfile'
-      - 'frontend/Dockerfile'
-      - 'backend/package.json'
-      - 'frontend/package.json'
-  pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 env:
-  TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
-  TF_VAR_resource_group: "itz-wxo-697c4652010cfefe9db664"
-  TF_VAR_project_name: "nyoba-cicd-joy"
-  TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
-  TF_VAR_dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  TF_VAR_region: "us-south"
-  IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
+  # Credentials & Config
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+  IBMCLOUD_API_KEY: ${{ secrets.IBMCLOUD_API_KEY }}
+  
+  # Variabel untuk Terraform
+  TF_VAR_ibmcloud_api_key: ${{ secrets.IBMCLOUD_API_KEY }}
+  TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+  TF_VAR_dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  TF_VAR_resource_group: "itz-wxo-697c4652010cfefe9db664"
+  TF_VAR_project_name: "nyoba-cicd-joy"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install IBM Cloud CLI
-        uses: ibm-cloud-actions/ibmcloud-cli@v1
-
-      - name: Login to IBM Cloud
-        uses: ibm-cloud-actions/login@v1
-        with:
-          api-key: ${{ secrets.IBMCLOUD_API_KEY }}
-          region: us-south
-          resource-group: itz-wxo-697c4652010cfefe9db664
-
+      # --- STEP 1: DOCKER BUILD & PUSH ---
       - name: Login to Docker Hub
-        run: docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_PASSWORD }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_PASSWORD }}
 
-      - name: Build Backend Docker Image
-        run: |
-          cd backend
-          docker build -t docker.io/${{ env.DOCKERHUB_USERNAME }}/backend-app:latest .
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ env.DOCKERHUB_USERNAME }}/backend-app:latest
 
-      - name: Push Backend Docker Image
-        run: docker push docker.io/${{ env.DOCKERHUB_USERNAME }}/backend-app:latest
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          # Note: Kita tidak bisa inject URL Backend di sini secara dinamis karena Backend belum ada URL-nya saat pertama kali deploy.
+          # Pastikan URL backend sudah di-hardcode di App.js seperti solusi kita sebelumnya.
+          tags: ${{ env.DOCKERHUB_USERNAME }}/frontend-app:latest
 
-      - name: Build Frontend Docker Image
-        run: |
-          cd frontend
-          docker build -t docker.io/${{ env.DOCKERHUB_USERNAME }}/frontend-app:latest .
-
-      - name: Push Frontend Docker Image
-        run: docker push docker.io/${{ env.DOCKERHUB_USERNAME }}/frontend-app:latest
-
+      # --- STEP 2: TERRAFORM DEPLOY ---
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -79,5 +63,4 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan

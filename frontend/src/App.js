@@ -41,7 +41,7 @@ function App() {
       <header className="App-header">
         <h1>IBM Cloud Fullstack App</h1>
         <div className="status-badge">
-          {loading ? "🔄 Memasangkan koneksi..." : "✅ Connected to Cloud"}
+          {loading ? "Memasangkan koneksi..." : "Connected to Cloud"}
         </div>
       </header>
 
@@ -60,7 +60,7 @@ function App() {
           
           {error && (
             <div className="error-card">
-              <h3>⚠️ Koneksi Gagal</h3>
+              <h3>Koneksi Gagal</h3>
               <p>{error}</p>
               <p><small>Tips: Pastikan Backend sudah nyala dan CORS sudah di-set ke '*'</small></p>
             </div>

@@ -19,23 +19,24 @@ variable "project_name" {
   default = "nyoba-cicd-joy"
 }
 
+variable "dockerhub_username" {
+  type    = string
+  default = "joycelyneb"
+}
+
+variable "dockerhub_password" {
+  type      = string
+  sensitive = true
+  # TOKEN JANGAN DITULIS DISINI! Nanti diambil dari GitHub Secrets.
+}
+
+# Image Reference otomatis dibentuk dari username
 variable "backend_image" {
   type    = string
-  default = "icr.io/cr-itz-z3r4x650/backend-app:latest"
+  default = "backend-app" # Cukup nama aplikasinya aja
 }
 
 variable "frontend_image" {
   type    = string
-  default = "icr.io/cr-itz-z3r4x650/frontend-app:latest"
-}
-
-variable "dockerhub_username" {
-  type        = string
-  description = "Docker Hub username"
-}
-
-variable "dockerhub_password" {
-  type        = string
-  sensitive   = true
-  description = "Docker Hub password or token"
+  default = "frontend-app" # Cukup nama aplikasinya aja
 }

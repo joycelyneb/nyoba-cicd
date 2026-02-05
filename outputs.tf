@@ -9,3 +9,7 @@ output "backend_url" {
 output "frontend_url" {
   value = ibm_code_engine_app.frontend.endpoint
 }
+
+output "backend_status" {
+  value = ibm_code_engine_app.backend.status
+}

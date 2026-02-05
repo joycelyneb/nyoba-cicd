@@ -32,10 +32,10 @@ variable "dockerhub_password" {
 # Image Reference otomatis dibentuk dari username
 variable "backend_image" {
   type    = string
-  default = "backend-app"
+  default = "docker.io/joycelyneb/backend-app:latest"
 }
 
 variable "frontend_image" {
   type    = string
-  default = "frontend-app"
+  default = "docker.io/joycelyneb/frontend-app:latest"
 }

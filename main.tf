@@ -4,7 +4,6 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = "~> 1.56.0"
     }
-    # Provider tambahan untuk fitur "Jeda Waktu"
     time = {
       source  = "hashicorp/time"
       version = "0.9.1"
@@ -28,8 +27,7 @@ resource "ibm_code_engine_project" "ce_project" {
   resource_group_id = data.ibm_resource_group.default.id
 }
 
-# 3. JEDA WAKTU (PENTING UNTUK MENCEGAH 502)
-# Memberi waktu 60 detik agar Project benar-benar siap sebelum diisi
+# 3. JEDA WAKTU (PENTING UNTUK STABILISASI PROJECT)
 resource "time_sleep" "wait_for_project_init" {
   depends_on = [ibm_code_engine_project.ce_project]
   create_duration = "60s"
@@ -37,7 +35,6 @@ resource "time_sleep" "wait_for_project_init" {
 
 # 4. Registry Secret (Kunci Docker Hub)
 resource "ibm_code_engine_secret" "registry_secret" {
-  # Tunggu timer selesai dulu
   depends_on = [time_sleep.wait_for_project_init]
   
   project_id = ibm_code_engine_project.ce_project.project_id
@@ -64,7 +61,7 @@ resource "ibm_code_engine_secret" "app_env_secret" {
   }
 }
 
-# --- 6. BACKEND ---
+# --- 6. BACKEND (SPEK STANDAR) ---
 resource "ibm_code_engine_app" "backend" {
   depends_on      = [ibm_code_engine_secret.registry_secret]
   
@@ -74,17 +71,17 @@ resource "ibm_code_engine_app" "backend" {
   image_port      = 5000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # SPEK MINIMUM (Paling Ringan)
-  scale_cpu_limit                = "0.125"
-  scale_memory_limit             = "0.25G"
-  scale_ephemeral_storage_limit  = "400M"
-  
-  # SOLUSI UTAMA 502: Set ke 0 (Mati saat idle, nyala saat diklik)
+  # --- SPEK YANG LEBIH KUAT (Bukan Minimum) ---
+  scale_cpu_limit                = "0.5"   # Naik dari 0.125
+  scale_memory_limit             = "1G"    # Naik dari 0.25G
+  scale_ephemeral_storage_limit  = "1G"    # Cukup luas
+
+  # TETAP 0 SAAT CREATE AGAR TIDAK ERROR 502
   scale_min_instances            = 0
-  scale_max_instances            = 1
+  scale_max_instances            = 5       # Bisa nambah sampai 5 kalau ramai
   
-  scale_concurrency              = 10
-  scale_concurrency_target       = 10
+  scale_concurrency              = 100
+  scale_concurrency_target       = 80
   
   run_env_variables {
     type  = "literal"
@@ -93,9 +90,8 @@ resource "ibm_code_engine_app" "backend" {
   }
 }
 
-# --- 7. FRONTEND ---
+# --- 7. FRONTEND (SPEK STANDAR) ---
 resource "ibm_code_engine_app" "frontend" {
-  # Tunggu backend selesai dibuat
   depends_on      = [ibm_code_engine_app.backend]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
@@ -104,14 +100,13 @@ resource "ibm_code_engine_app" "frontend" {
   image_port      = 3000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # SPEK MINIMUM
-  scale_cpu_limit                = "0.125"
-  scale_memory_limit             = "0.25G"
-  scale_ephemeral_storage_limit  = "400M"
+  # --- SPEK YANG LEBIH KUAT ---
+  scale_cpu_limit                = "0.5"
+  scale_memory_limit             = "1G"
+  scale_ephemeral_storage_limit  = "1G"
   
-  # SOLUSI UTAMA 502: Set ke 0
   scale_min_instances            = 0
-  scale_max_instances            = 1
+  scale_max_instances            = 5
 
   run_env_variables {
     type  = "literal"

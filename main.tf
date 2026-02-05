@@ -29,7 +29,10 @@ resource "ibm_code_engine_project" "ce_project" {
 
 # 3. WAIT FOR PROJECT INITIALIZATION
 resource "time_sleep" "wait_for_project_init" {
-  depends_on = [ibm_code_engine_project.ce_project]
+  depends_on = [
+    ibm_code_engine_secret.app_env_secret,
+    ibm_code_engine_secret.registry_secret
+  ]
   create_duration = "120s"
 }
 

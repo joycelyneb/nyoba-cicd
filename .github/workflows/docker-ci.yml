@@ -1,6 +1,6 @@
 name: Microservices Docker CI/CD
 
-# triggernya
+# Trigger
 on:
   push:
     branches: [ "main" ]
@@ -12,29 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Ambil kode dari repo
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Login dulu ke Docker Hub
+      # 1. Login ke Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }} 
 
-      # Build & Push Backend
+      # 2. Build & Push Backend
+      # PERBAIKAN: Nama image disamakan jadi 'backend-app' dan tambah platform linux/amd64
       - name: Build and Push Backend
         uses: docker/build-push-action@v5
         with:
           context: ./backend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-app:latest
 
-      # Build & Push Frontend
+      # 3. Build & Push Frontend
+      # PERBAIKAN: Nama image disamakan jadi 'frontend-app'
       - name: Build and Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-app:latest

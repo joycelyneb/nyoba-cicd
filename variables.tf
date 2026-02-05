@@ -16,7 +16,7 @@ variable "resource_group" {
 
 variable "project_name" {
   type    = string
-  default = "nyoba-cicd-joy"
+  default = "nyoba-cicd-joy2"
 }
 
 variable "dockerhub_username" {
@@ -27,16 +27,15 @@ variable "dockerhub_username" {
 variable "dockerhub_password" {
   type      = string
   sensitive = true
-  # TOKEN JANGAN DITULIS DISINI! Nanti diambil dari GitHub Secrets.
 }
 
 # Image Reference otomatis dibentuk dari username
 variable "backend_image" {
   type    = string
-  default = "backend-app" # Cukup nama aplikasinya aja
+  default = "backend-app"
 }
 
 variable "frontend_image" {
   type    = string
-  default = "frontend-app" # Cukup nama aplikasinya aja
+  default = "frontend-app"
 }

@@ -30,7 +30,7 @@ resource "ibm_code_engine_secret" "registry_secret" {
   format     = "registry"
   
   data = {
-    server   = "https://index.docker.io/v1/" # Server resmi Docker Hub
+    server   = "docker.io"
     username = var.dockerhub_username
     password = var.dockerhub_password
   }

@@ -4,11 +4,6 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = "~> 1.56.0"
     }
-    # 1. PROVIDER BARU: TIME (Wajib di-init ulang nanti)
-    time = {
-      source  = "hashicorp/time"
-      version = "0.9.1"
-    }
   }
 }
 
@@ -26,13 +21,6 @@ data "ibm_resource_group" "default" {
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name
   resource_group_id = data.ibm_resource_group.default.id
-}
-
-# 3. JEDA WAKTU (PENYELAMAT 502)
-# Kita suruh Terraform tidur 60 detik setelah Project jadi.
-resource "time_sleep" "wait_for_project_init" {
-  depends_on = [ibm_code_engine_project.ce_project]
-  create_duration = "60s"
 }
 
 # 4. Registry Secret (Kunci Docker Hub)

@@ -4,7 +4,7 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = "~> 1.56.0"
     }
-    # 1. TAMBAHKAN PROVIDER TIME
+    # Provider tambahan untuk fitur "Jeda Waktu"
     time = {
       source  = "hashicorp/time"
       version = "0.9.1"
@@ -17,28 +17,27 @@ provider "ibm" {
   region           = var.region
 }
 
-# Resource Group
+# 1. Ambil Data Resource Group
 data "ibm_resource_group" "default" {
   name = var.resource_group
 }
 
-# Buat Project
+# 2. Buat Project Code Engine
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name
   resource_group_id = data.ibm_resource_group.default.id
 }
 
-# 2. TAMBAHKAN TIMER (Jeda Waktu)
-# Ini akan menahan proses selama 90 detik setelah Project jadi
+# 3. JEDA WAKTU (PENTING UNTUK MENCEGAH 502)
+# Memberi waktu 60 detik agar Project benar-benar siap sebelum diisi
 resource "time_sleep" "wait_for_project_init" {
   depends_on = [ibm_code_engine_project.ce_project]
-
-  create_duration = "90s" # Jeda 1.5 menit agar IBM Cloud stabil dulu
+  create_duration = "60s"
 }
 
-# Registry Secret (Kunci Masuk Docker Hub)
+# 4. Registry Secret (Kunci Docker Hub)
 resource "ibm_code_engine_secret" "registry_secret" {
-  # 3. UBAH DEPENDENCY: Jangan nunggu Project, tapi nunggu TIMER selesai
+  # Tunggu timer selesai dulu
   depends_on = [time_sleep.wait_for_project_init]
   
   project_id = ibm_code_engine_project.ce_project.project_id
@@ -52,9 +51,8 @@ resource "ibm_code_engine_secret" "registry_secret" {
   }
 }
 
-# App Environment Secret
+# 5. App Env Secret
 resource "ibm_code_engine_secret" "app_env_secret" {
-  # Nunggu timer juga
   depends_on = [time_sleep.wait_for_project_init]
   
   project_id = ibm_code_engine_project.ce_project.project_id
@@ -66,10 +64,8 @@ resource "ibm_code_engine_secret" "app_env_secret" {
   }
 }
 
-# --- BACKEND ---
+# --- 6. BACKEND ---
 resource "ibm_code_engine_app" "backend" {
-  # Backend nunggu Secret jadi (Secret nunggu Timer, Timer nunggu Project)
-  # Jadi urutannya aman.
   depends_on      = [ibm_code_engine_secret.registry_secret]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
@@ -78,12 +74,17 @@ resource "ibm_code_engine_app" "backend" {
   image_port      = 5000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # Spek Kecil (Aman)
+  # SPEK MINIMUM (Paling Ringan)
   scale_cpu_limit                = "0.125"
   scale_memory_limit             = "0.25G"
   scale_ephemeral_storage_limit  = "400M"
-  scale_min_instances            = 1
+  
+  # SOLUSI UTAMA 502: Set ke 0 (Mati saat idle, nyala saat diklik)
+  scale_min_instances            = 0
   scale_max_instances            = 1
+  
+  scale_concurrency              = 10
+  scale_concurrency_target       = 10
   
   run_env_variables {
     type  = "literal"
@@ -92,8 +93,9 @@ resource "ibm_code_engine_app" "backend" {
   }
 }
 
-# --- FRONTEND ---
+# --- 7. FRONTEND ---
 resource "ibm_code_engine_app" "frontend" {
+  # Tunggu backend selesai dibuat
   depends_on      = [ibm_code_engine_app.backend]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
@@ -102,10 +104,13 @@ resource "ibm_code_engine_app" "frontend" {
   image_port      = 3000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
+  # SPEK MINIMUM
   scale_cpu_limit                = "0.125"
   scale_memory_limit             = "0.25G"
   scale_ephemeral_storage_limit  = "400M"
-  scale_min_instances            = 1
+  
+  # SOLUSI UTAMA 502: Set ke 0
+  scale_min_instances            = 0
   scale_max_instances            = 1
 
   run_env_variables {

@@ -4,6 +4,7 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = "~> 1.56.0"
     }
+    # 1. PROVIDER BARU: TIME (Wajib di-init ulang nanti)
     time = {
       source  = "hashicorp/time"
       version = "0.9.1"
@@ -16,18 +17,19 @@ provider "ibm" {
   region           = var.region
 }
 
-# 1. Ambil Data Resource Group
+# Resource Group
 data "ibm_resource_group" "default" {
   name = var.resource_group
 }
 
-# 2. Buat Project Code Engine
+# 2. BUAT PROJECT
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name
   resource_group_id = data.ibm_resource_group.default.id
 }
 
-# 3. JEDA WAKTU (PENTING UNTUK STABILISASI PROJECT)
+# 3. JEDA WAKTU (PENYELAMAT 502)
+# Kita suruh Terraform tidur 60 detik setelah Project jadi.
 resource "time_sleep" "wait_for_project_init" {
   depends_on = [ibm_code_engine_project.ce_project]
   create_duration = "60s"
@@ -35,6 +37,7 @@ resource "time_sleep" "wait_for_project_init" {
 
 # 4. Registry Secret (Kunci Docker Hub)
 resource "ibm_code_engine_secret" "registry_secret" {
+  # Tunggu timer selesai dulu (bukan langsung project)
   depends_on = [time_sleep.wait_for_project_init]
   
   project_id = ibm_code_engine_project.ce_project.project_id
@@ -42,13 +45,13 @@ resource "ibm_code_engine_secret" "registry_secret" {
   format     = "registry"
   
   data = {
-    server   = "https://index.docker.io/v1/"
+    server   = "docker.io"
     username = var.dockerhub_username
     password = var.dockerhub_password
   }
 }
 
-# 5. App Env Secret
+# App Environment Secret
 resource "ibm_code_engine_secret" "app_env_secret" {
   depends_on = [time_sleep.wait_for_project_init]
   
@@ -61,8 +64,9 @@ resource "ibm_code_engine_secret" "app_env_secret" {
   }
 }
 
-# --- 6. BACKEND (SPEK STANDAR) ---
+# --- 5. BACKEND (SPEK TINGGI - KEMBALI SEPERTI SEMULA) ---
 resource "ibm_code_engine_app" "backend" {
+  # Tunggu Secret jadi dulu
   depends_on      = [ibm_code_engine_secret.registry_secret]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
@@ -71,17 +75,16 @@ resource "ibm_code_engine_app" "backend" {
   image_port      = 5000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # --- SPEK YANG LEBIH KUAT (Bukan Minimum) ---
-  scale_cpu_limit                = "0.5"   # Naik dari 0.125
-  scale_memory_limit             = "1G"    # Naik dari 0.25G
-  scale_ephemeral_storage_limit  = "1G"    # Cukup luas
-
-  # TETAP 0 SAAT CREATE AGAR TIDAK ERROR 502
-  scale_min_instances            = 0
-  scale_max_instances            = 5       # Bisa nambah sampai 5 kalau ramai
+  # SPEK TINGGI (Sesuai request kamu)
+  scale_cpu_limit                = "2"
+  scale_memory_limit             = "4G"
+  scale_ephemeral_storage_limit  = "2457M"
   
-  scale_concurrency              = 100
-  scale_concurrency_target       = 80
+  # Tetap Min 1 (Langsung Nyala)
+  scale_min_instances            = 1
+  scale_max_instances            = 10
+  scale_concurrency              = 10
+  scale_concurrency_target       = 10
   
   run_env_variables {
     type  = "literal"
@@ -90,7 +93,7 @@ resource "ibm_code_engine_app" "backend" {
   }
 }
 
-# --- 7. FRONTEND (SPEK STANDAR) ---
+# --- 6. FRONTEND (SPEK TINGGI) ---
 resource "ibm_code_engine_app" "frontend" {
   depends_on      = [ibm_code_engine_app.backend]
   
@@ -100,13 +103,15 @@ resource "ibm_code_engine_app" "frontend" {
   image_port      = 3000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
-  # --- SPEK YANG LEBIH KUAT ---
-  scale_cpu_limit                = "0.5"
-  scale_memory_limit             = "1G"
-  scale_ephemeral_storage_limit  = "1G"
+  # SPEK TINGGI
+  scale_cpu_limit                = "2"
+  scale_memory_limit             = "4G"
+  scale_ephemeral_storage_limit  = "2457M"
   
-  scale_min_instances            = 0
-  scale_max_instances            = 5
+  scale_min_instances            = 1
+  scale_max_instances            = 10
+  scale_concurrency              = 10
+  scale_concurrency_target       = 10
 
   run_env_variables {
     type  = "literal"

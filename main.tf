@@ -4,6 +4,10 @@ terraform {
       source  = "IBM-Cloud/ibm"
       version = "~> 1.56.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.9.1"
+    }
   }
 }
 
@@ -21,6 +25,12 @@ data "ibm_resource_group" "default" {
 resource "ibm_code_engine_project" "ce_project" {
   name              = var.project_name
   resource_group_id = data.ibm_resource_group.default.id
+}
+
+# 3. WAIT FOR PROJECT INITIALIZATION
+resource "time_sleep" "wait_for_project_init" {
+  depends_on = [ibm_code_engine_project.ce_project]
+  create_duration = "120s"
 }
 
 # 4. Registry Secret (Kunci Docker Hub)
@@ -54,12 +64,11 @@ resource "ibm_code_engine_secret" "app_env_secret" {
 
 # --- 5. BACKEND (SPEK TINGGI - KEMBALI SEPERTI SEMULA) ---
 resource "ibm_code_engine_app" "backend" {
-  # Tunggu Secret jadi dulu
-  depends_on      = [ibm_code_engine_secret.registry_secret]
+  depends_on      = [time_sleep.wait_for_project_init, ibm_code_engine_secret.registry_secret]
   
   project_id      = ibm_code_engine_project.ce_project.project_id
   name            = "${var.project_name}-backend"
-  image_reference = "docker.io/${var.dockerhub_username}/${var.backend_image}:latest"
+  image_reference = var.backend_image
   image_port      = 5000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 
@@ -87,7 +96,7 @@ resource "ibm_code_engine_app" "frontend" {
   
   project_id      = ibm_code_engine_project.ce_project.project_id
   name            = "${var.project_name}-frontend"
-  image_reference = "docker.io/${var.dockerhub_username}/${var.frontend_image}:latest"
+  image_reference = var.frontend_image
   image_port      = 3000
   image_secret    = ibm_code_engine_secret.registry_secret.name
 

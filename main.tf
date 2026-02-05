@@ -77,7 +77,7 @@ resource "ibm_code_engine_app" "backend" {
 
   # SPEK TINGGI (Sesuai request kamu)
   scale_cpu_limit                = "2"
-  scale_memory_limit             = "4G"
+  scale_memory_limit             = "4Gi"
   scale_ephemeral_storage_limit  = "2457M"
   
   # Tetap Min 1 (Langsung Nyala)
@@ -105,7 +105,7 @@ resource "ibm_code_engine_app" "frontend" {
 
   # SPEK TINGGI
   scale_cpu_limit                = "2"
-  scale_memory_limit             = "4G"
+  scale_memory_limit             = "4Gi"
   scale_ephemeral_storage_limit  = "2457M"
   
   scale_min_instances            = 1

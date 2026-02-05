@@ -31,9 +31,9 @@ app.get('/api/data', (req, res) => {
     message: 'Hello from Backend!',
     timestamp: new Date().toISOString(),
     data: [
-      { id: 1, name: 'Item 1', description: 'Deskripsi item pertama' },
-      { id: 2, name: 'Item 2', description: 'Deskripsi item kedua' },
-      { id: 3, name: 'Item 3', description: 'Deskripsi item ketiga' }
+      { id: 1, name: 'Item 1', description: 'pertama' },
+      { id: 2, name: 'Item 2', description: 'kedua' },
+      { id: 3, name: 'Item 3', description: 'ketiga' }
     ]
   });
 });

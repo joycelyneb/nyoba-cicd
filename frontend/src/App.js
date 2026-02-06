@@ -6,8 +6,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- URL FIX DARI IBM CLOUD (Ganti URL ini jika nama project berubah) ---
-  const BACKEND_URL = "https://nyoba-cicd-joy2-backend.25vc8mhbgyki.us-south.codeengine.appdomain.cloud";
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   useEffect(() => {
     fetchData();
@@ -36,13 +35,45 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>IBM Cloud Fullstack</h1>
+        <h1>Nyoba CICD</h1>
         <p>Status: {loading ? "Loading..." : "Ready"}</p>
       </header>
-      <main className="container">
-         {/* Tampilkan Data */}
-         {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-         {error && <p style={{color:'red'}}>{error}</p>}
+      <main className="container content">
+        {error && (
+          <div className="error">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+        
+        {loading && (
+          <div className="message-box">
+            <h3>Loading...</h3>
+            <p>Fetching data from backend...</p>
+          </div>
+        )}
+
+        {data && !loading && (
+          <div className="data-container">
+            <div className="message-box">
+              <h3>{data.message}</h3>
+              <p><strong>Timestamp:</strong> {data.timestamp}</p>
+            </div>
+
+            {data.data && data.data.length > 0 && (
+              <div className="items-list">
+                <h3>Items from Backend:</h3>
+                <ul>
+                  {data.data.map((item) => (
+                    <li key={item.id} className="item">
+                      <strong>ID: {item.id} - {item.name}</strong>
+                      <p>{item.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );

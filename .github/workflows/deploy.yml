@@ -47,6 +47,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USERNAME }}/frontend-app:latest
           platforms: linux/amd64
+          build-args: REACT_APP_BACKEND_URL=https://placeholder-backend.cloud
 
       # --- STEP 2: TERRAFORM DEPLOY ---
       - name: Setup Terraform

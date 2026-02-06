@@ -26,10 +26,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      # Catatan: Karena URL sudah di-hardcode di App.js, 
-      # args di sini opsional, tapi bagus untuk struktur.
       args:
-        - REACT_APP_BACKEND_URL=https://nyoba-cicd-joy-backend.25vc8mhbgyki.us-south.codeengine.appdomain.cloud
+        - REACT_APP_BACKEND_URL=http://backend:5000
+    environment:
+      # Override di runtime jika perlu (untuk production di cloud)
+      - REACT_APP_BACKEND_URL=http://backend:5000
     ports:
       - "3000:3000"
     networks:

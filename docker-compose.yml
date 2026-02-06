@@ -4,6 +4,7 @@ services:
   # --- BACKEND SERVICE ---
   backend:
     container_name: joy-backend-prod
+    image: joycelyneb/backend-app:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -23,6 +24,7 @@ services:
   # --- FRONTEND SERVICE ---
   frontend:
     container_name: joy-frontend-prod
+    image: joycelyneb/frontend-app:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile

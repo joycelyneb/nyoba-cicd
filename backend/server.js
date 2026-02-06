@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 5000;
 
 // --- 1. Middleware CORS yang Diperkuat ---
 app.use(cors({
-  origin: '*', 
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -17,7 +17,7 @@ app.use(express.json());
 // --- 2. Endpoint Tambahan untuk "/" ---
 // Supaya tidak muncul "Cannot GET /" saat URL utama dibuka
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'IBM Code Engine Backend is Live!',
     health_check: '/health',
     api_endpoint: '/api/data'

@@ -6,7 +6,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const BACKEND_URL = (window._env_ && window._env_.REACT_APP_BACKEND_URL) || process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   useEffect(() => {
     fetchData();
@@ -17,11 +17,11 @@ function App() {
       setLoading(true);
       // Panggil Backend
       const response = await fetch(`${BACKEND_URL}/api/data`);
-      
+
       if (!response.ok) {
         throw new Error(`Gagal: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (error) {
@@ -44,7 +44,7 @@ function App() {
             <strong>Error:</strong> {error}
           </div>
         )}
-        
+
         {loading && (
           <div className="message-box">
             <h3>Loading...</h3>
